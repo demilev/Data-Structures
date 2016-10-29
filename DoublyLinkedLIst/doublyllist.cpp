@@ -44,7 +44,6 @@ public:
 template<typename T>
 void DoublyLinkedList<T>::copy(const DoublyLinkedList<T>& other){
 	Node<T>* crr=other.start;
-	int index=0;
 	while(crr!=NULL){
 		toEnd(crr->data);
 		crr=crr->next;
