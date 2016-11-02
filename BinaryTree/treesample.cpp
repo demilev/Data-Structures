@@ -61,12 +61,14 @@ private:
 	void findTrace(const T&,Node<T>*,string&) const;
 	void prettyPrint(Node<T>*,int)const;
 	void findElem(int,Node<T>*,T*&);
+	void schemePrint(Node<T>*)const;
 public:
 	BTree();
 	BTree<T>& add (const T& data, const char *trace);
 	void simplePrint () const;
 	void dottyPrint (ostream&);
 	void prettyPrint()const;
+	void schemePrint()const;
 	bool member (const T&) const;
 	int searchCount(bool(*)(const T&));
 	void map (mapFn<T>);
@@ -81,6 +83,28 @@ public:
 	string findTrace(const T&) const;
 	T& operator[](int);
 };
+template<class T>
+void BTree<T>::schemePrint (Node<T> *subTreeRoot) const
+{
+	if (subTreeRoot == NULL)
+	{
+		cout << "()";
+		return;
+	}
+
+	cout <<"("<<subTreeRoot->data << " ";
+
+	schemePrint (subTreeRoot->left);
+	schemePrint (subTreeRoot->right);
+	cout<<")";
+}
+
+template<class T>
+void BTree<T>::schemePrint () const
+{
+	schemePrint (root);
+	cout << endl;
+}
 template<class T>
 void BTree<T>::findElem(int i,Node<T>*subTreeRoot,T*& elem){
 	if(i==0){
@@ -517,7 +541,8 @@ int main () //some testing
 	cout<<t.findTrace(28)<<endl;
 	t.prettyPrint();
 	t.dottyPrint(cerr);
-	cout<<endl<<t[3]<<endl;
+	cout<<endl;
+	t.schemePrint();
 	system("pause");
 	return 0;
 }

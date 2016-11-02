@@ -66,7 +66,7 @@ DoublyLinkedList<T>::DoublyLinkedList(){
 template<typename T>
 DoublyLinkedList<T>::DoublyLinkedList(const DoublyLinkedList<T>& other){
 	start=NULL;
-	end=NULL;	
+	end=NULL;
 	copy(other);
 }
 template<typename T>
@@ -107,6 +107,7 @@ void DoublyLinkedList<T>::pop(){
 	}
 	Node<T> *crr=end;
 	end=end->previous;
+	end->next=NULL;
 	delete crr;
 }
 template<typename T>
@@ -238,4 +239,5 @@ DoublyLinkedList<T>* DoublyLinkedList<T>::filter(bool (*pred)(const T&))const{
 	}
 	return new DoublyLinkedList<T>(result);
 }
+
 
