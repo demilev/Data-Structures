@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <list>
 #include <fstream>
+#include <assert.h>
 using namespace std;
 template<typename T>
 struct Node{
@@ -50,7 +51,6 @@ class Tree{
                 maxHeight=crr;
         }
         return maxHeight;
-
     }
 
     bool member(const T& element, Node<T>* subTreeRoot){
@@ -65,23 +65,49 @@ class Tree{
         }
         return false;
     }
-    static Node*<int> parseTree(Node<T>* subTreeRoot, ifstream& in){
+    static void parseChildren(ifstream& in, list<Node<T>*>& children){
+        assert(in.peek()=='(');
+        in.get(); //махаме скобата
+        if(in.peek()==')'){
+            in.get();
+            return;
+        }
+        do{
+            if(in.peek()==',')
+                in.get();
+            Node<T>* node=parseNode(in);
+            children.push_back(node);
+        }
+        while(in.peek()==',');
+        in.get();//махаме затваряща скоба
+    }
+    static Node<T>* parseNode(ifstream& in){
         assert(in.peek()=='(');
         in.get(); //махаме скобата
         if(in.peek()==')'){
             in.get();
             return NULL;
-`       }
-        int data;
-        in>>data;
-        Node<int> crr=new Node<int>(data,NULL);
-        if(in.peek()==','){
-
-            return crr;
         }
-
-
-
+        T data;
+        in>>data;
+        list<Node<T>*> children;
+        Tree<T>::parseChildren(in,children);
+        Node<T>* crr=new Node<T>(data,children);
+        in.get();//махаме затваряща скоба
+        return crr;
+    }
+    int mostExpensivePath(Node<T>* subTreeRoot){
+        if(subTreeRoot==NULL)
+            return 0;
+        int crr=subTreeRoot->data;
+        int max=0;
+        typename list<Node<T>*>::iterator iterator;
+        for (iterator = subTreeRoot->children.begin(); iterator != subTreeRoot->children.end();iterator++) {
+            int crrMax=mostExpensivePath(*iterator);
+            if(crrMax>max)
+                max=crrMax;
+        }
+        return max+crr;
     }
 
 public:
@@ -125,11 +151,16 @@ public:
     bool member(const T& element){
         return member(element,root);
     }
-    static Tree<int> deserializeIntTree(ifstream& in){
-        Tree result();
-        result.addChild(parseTree(in,root))
+    static Tree<T> deserialize(ifstream& in){
+        Tree<T> result;
+        result.addChild(Tree<T>::parseNode(in));
         return result;
     }
+
+    int mostExpensivePath(){
+        return mostExpensivePath(root);
+    }
+
     template<typename F>
     friend ostream& operator<<(ostream&,const Tree<F>&);
 
@@ -178,7 +209,13 @@ int main(){
     cout<<tree.member(12)<<endl;
     cout<<tree.member(1236)<<endl;
     cout<<tree.member(444)<<endl;
+    ifstream in;
+    in.open("tree.txt");
 
+    Tree<int> parsedTree=Tree<int>::deserialize(in);
+    in.close();
+    cout<<parsedTree<<endl;
+    cout<<parsedTree.mostExpensivePath()<<endl;
     // to do (5 ((9 ()),(1 ((4 ()),(12 ()),(42 ()))))) - - - - > 5->(9,1->(4,12,42)) + най-скъп път
 
     return 0;
