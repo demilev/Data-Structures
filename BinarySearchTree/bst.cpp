@@ -1,6 +1,7 @@
-#include<iostream>
-#include<queue>
-#include<assert.h>
+#include <iostream>
+#include <queue>
+#include <assert.h>
+#include <vector>
 using namespace std;
 
 template<typename T>
@@ -96,8 +97,26 @@ class BSTree{
         }
         return crr->data;
     }
-
-
+    bool member(Node<T>* subTreeRoot,const T& element){
+    	if(subTreeRoot==NULL)
+    		return false;
+    	return subTreeRoot->data==element||
+    		   member(subTreeRoot->left,element)||
+    		   member(subTreeRoot->right,element);
+    }
+    void allPaths(Node<T>* subTreeRoot,vector<T>& crr,vector<vector<T>>& result){
+    	crr.push_back(subTreeRoot->data);
+    	if(subTreeRoot->left==NULL&&subTreeRoot->right==NULL){
+    		result.push_back(crr);
+    		return;
+    	}
+    	vector<T> leftCopy=crr;
+    	vector<T> rightCopy=crr;
+    	if(subTreeRoot->left!=NULL)
+    		allPaths(subTreeRoot->left,leftCopy,result);
+    	if(subTreeRoot->right!=NULL)
+    		allPaths(subTreeRoot->right,rightCopy,result);		
+    }
 public:
     BSTree(){
         root=NULL;
@@ -135,7 +154,15 @@ public:
     void deleteElem(const T& element){
         deleteElem(root,element);
     }
-
+    bool member(const T& element){
+    	return member(root,element);
+    }
+    vector<vector<T>> allPaths(){
+    	vector<vector<T>> result;
+    	vector<T> crr;
+    	allPaths(root,crr,result);
+    	return result;
+    }
 };
 int main(){
 
@@ -146,8 +173,14 @@ int main(){
     t.add(20);
     t.add(17);
     t.add(18);
-    t.bfsPrint();
-    t.deleteElem(5);
-    t.bfsPrint();
-
+    //t.bfsPrint();
+   // t.deleteElem(5);
+    //t.bfsPrint();
+    vector<vector<int>> paths=t.allPaths();
+   	for(int i=0;i<paths.size();i++){
+    	for(int k=0;k<paths[i].size();k++)
+    		cout<<paths[i][k]<<" ";
+    	cout<<endl;
+    }
+ 
 }
