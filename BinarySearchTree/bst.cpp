@@ -115,8 +115,9 @@ class BSTree{
     	if(subTreeRoot->left!=NULL)
     		allPaths(subTreeRoot->left,leftCopy,result);
     	if(subTreeRoot->right!=NULL)
-    		allPaths(subTreeRoot->right,rightCopy,result);		
+    		allPaths(subTreeRoot->right,rightCopy,result);
     }
+
 public:
     BSTree(){
         root=NULL;
@@ -163,6 +164,30 @@ public:
     	allPaths(root,crr,result);
     	return result;
     }
+
+    vector<vector<T>> allLevels()
+    {
+        vector<vector<T>> result;
+        queue<Node<T>*> crr;
+        crr.push(root);
+        while(!crr.empty())
+        {
+            vector<T> crrData;
+            int size=crr.size();
+            for(int i=0;i<size;i++)
+            {
+                Node<T>* crrNode=crr.front();
+                crr.pop();
+                crrData.push_back(crrNode->data);
+                if(crrNode->left!=NULL)
+                    crr.push(crrNode->left);
+                if(crrNode->right!=NULL)
+                    crr.push(crrNode->right);
+            }
+            result.push_back(crrData);
+        }
+        return result;
+    }
 };
 int main(){
 
@@ -176,11 +201,11 @@ int main(){
     //t.bfsPrint();
    // t.deleteElem(5);
     //t.bfsPrint();
-    vector<vector<int>> paths=t.allPaths();
-   	for(int i=0;i<paths.size();i++){
-    	for(int k=0;k<paths[i].size();k++)
-    		cout<<paths[i][k]<<" ";
+    vector<vector<int>> levels=t.allLevels();
+    	for(int i=0;i<levels.size();i++){
+    	for(int k=0;k<levels[i].size();k++)
+    		cout<<levels[i][k]<<" ";
     	cout<<endl;
     }
- 
+
 }
