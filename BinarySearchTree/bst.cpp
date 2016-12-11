@@ -117,7 +117,49 @@ class BSTree{
     	if(subTreeRoot->right!=NULL)
     		allPaths(subTreeRoot->right,rightCopy,result);
     }
+    int numOfNodes(Node<T>* subTreeRoot){
+        if(subTreeRoot==NULL)
+            return 0;
+        return 1+numOfNodes(subTreeRoot->left)+numOfNodes(subTreeRoot->right);
+    }
+    bool isBalanced(Node<T>* subTreeRoot){
+        if(subTreeRoot==NULL)
+            return true;
+        return abs(numOfNodes(subTreeRoot->left)-numOfNodes(subTreeRoot->right))<=1&&
+               isBalanced(subTreeRoot->left)&&
+               isBalanced(subTreeRoot->right);
+    }
+    T parent(Node<T>* subTreeRoot,const T& first,const T& second){
+        if(member(subTreeRoot->left,first)&&member(subTreeRoot->right,second)||
+           member(subTreeRoot->right,first)&&member(subTreeRoot->left,second)||
+           member(subTreeRoot->left,first)&&member(subTreeRoot->left,second)&&(subTreeRoot->left->data==first||subTreeRoot->left->data==second)||
+           member(subTreeRoot->right,first)&&member(subTreeRoot->right,second)&&(subTreeRoot->right->data==first||subTreeRoot->right->data==second)
+           )
+            return subTreeRoot->data;
 
+        if( member(subTreeRoot->left,first)&&member(subTreeRoot->left,second))
+            return parent(subTreeRoot->left,first,second);
+        if( member(subTreeRoot->right,first)&&member(subTreeRoot->right,second))
+            return parent(subTreeRoot->right,first,second);
+    }
+    void findPath(Node<T>* subTreeRoot,const T& elem,vector<T>& result){
+        if(subTreeRoot==NULL)
+            return;
+        if(elem==subTreeRoot->data){
+            result.push_back(elem);
+            return;
+        }
+        if(member(subTreeRoot->left,elem)){
+            result.push_back(subTreeRoot->data);
+            findPath(subTreeRoot->left,elem,result);
+            return;
+        }
+        if(member(subTreeRoot->right,elem)){
+            result.push_back(subTreeRoot->data);
+            findPath(subTreeRoot->right,elem,result);
+            return;
+        }
+    }
 public:
     BSTree(){
         root=NULL;
@@ -186,6 +228,20 @@ public:
             }
             result.push_back(crrData);
         }
+        return result;
+    }
+    bool isBalanced(){
+        return isBalanced(root);
+    }
+    int numOfNodes(){
+        return numOfNodes(root);
+    }
+    T parent(const T& first,const T& second){
+        return parent(root,first,second);
+    }
+    vector<T> findPath(const T& elem){
+        vector<T> result;
+        findPath(root,elem,result);
         return result;
     }
 };
