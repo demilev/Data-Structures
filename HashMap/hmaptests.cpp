@@ -19,6 +19,17 @@ size_t stringhash1 (const string& s, size_t htsize)
 	return x % htsize;
 }
 
+void grow(double& d)
+{
+	d+=0.1;
+}
+
+string appendSpecialInfo(const string& s)
+{
+	string result = s;
+	result.push_back(s[0]);
+	return result;
+}
 void testHMapCore ()
 {
 
@@ -78,10 +89,91 @@ void testOperatorOut()
 	m.operator<<(cout);
 }
 
+void testHMapIterator ()
+{
+
+	HashMap<string,double> m(7,stringhash1);
+
+	m["Kalin"] = 1.85;
+	m["Ivan"] = 1.86;
+
+	int count = 0;
+	for (string key : m)
+	{
+		assert (key == "Kalin" || key == "Ivan");
+		cout << "key:" << count << "=" << key << endl;
+		count++;
+	}
+
+	assert (count == 2);
+}
+
+void testHMapResize ()
+{
+	HashMap<string,double> m(1,stringhash1);
+
+	m["Kalin"] = 1.85;
+	m["Ivan"] = 1.86;
+
+	m.resize (7);
+
+	assert (m["Kalin"] == 1.85);
+	assert (m["Ivan"] == 1.86);
+	assert (m.containsKey("Kalin") == true);
+	assert (m.containsKey("Petar") == false);
+
+}
+
+void testHMapMapFunction()
+{
+	HashMap<string,double> m(1,stringhash1);
+
+	m["Kalin"] = 1.85;
+	m["Ivan"] = 1.86;
+
+	m.map(grow);
+	
+	assert (m["Kalin"] == (1.85+0.1));
+	assert (m["Ivan"] == (1.86+0.1));
+}
+
+void testHMapMapKeyFunction()
+{
+	HashMap<string,double> m(1,stringhash1);
+
+	m["Kalin"] = 1.85;
+	m["Ivan"] = 1.86;
+
+	m.mapKeys(appendSpecialInfo);
+
+	assert (m["KalinK"] == 1.85);
+	assert (m["IvanI"] == 1.86);
+}
+void testHMapWeirdIterator()
+{
+	HashMap<string,double> m(7,stringhash1);
+
+	m["Kalin"] = 1.85;
+	m["Ivan"] = 1.86;
+
+	int count = 0;
+	for (string key : m)
+	{
+		assert (key == "Kalin"||key == string());
+		cout << "key:" << count << "=" << key << endl;
+		count++;
+	}
+
+	assert (count == 2);
+}
 int main ()
 {
 	testHMapCore();
 	testHMapCannonical();
 	testEfficiency();
 	testOperatorOut();
+	testHMapIterator();
+	testHMapResize();
+	testHMapMapFunction();
+	testHMapMapKeyFunction();
 }
