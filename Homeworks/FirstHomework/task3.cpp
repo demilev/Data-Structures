@@ -4,26 +4,6 @@
 
 using namespace std;
 
-unsigned int power10(unsigned int power)
-{
-	unsigned int result = 1;
-	for(int i=0;i<power;i++)
-	{
-		result*=10;
-	}
-	return result;
-}
-
-//структура, която пази "стойността" на дървото 
-//и дали тя е валидна (това е заради условието на задачата: "функцията да връща подходяща стойност, чието значение да бъде успешното й изпълнение")
-//една сума ще е невалидна, ако някой от възлите е отрицателен или е повече от 10
-struct OptionalValue
-{
-	unsigned int value;
-	bool isValid;
-	OptionalValue(unsigned int v, bool i):value(v),isValid(i){}
-
-};
 
 template <typename T>
 struct Node{
@@ -39,7 +19,7 @@ struct Node{
 
 template <typename T>
 class BSTree{
-	
+
 	Node<T>* root;
 
 	Node<T>* copyTree(const Node<T>* subTreeRoot)
@@ -65,7 +45,7 @@ class BSTree{
 	void add(Node<T>*& subTreeRoot,const T& element)
 	{
 		if(subTreeRoot == nullptr)
-		{	
+		{
 			subTreeRoot = new Node<T>(element,nullptr,nullptr);
 			return;
 		}
@@ -78,7 +58,7 @@ class BSTree{
 	}
 
 	using pendingTraverseStep = pair<int,Node<T>*>;
-	
+
 	#define STEP_EXTRACT_ROOT 0
 	#define STEP_TRAVERSE_SUBTREE 1
 
@@ -122,17 +102,18 @@ public:
 		return root == nullptr;
 	}
 
-	OptionalValue value()
+	stack<size_t> value()
 	{
+		stack<size_t> result;
+
 		if(root == nullptr)
-			return OptionalValue(0,true);
-		
-		unsigned int power = 0;
-		unsigned int result = 0;
+			return result;
+
+
 		stack<pendingTraverseStep> operations;
 		operations.push(pendingTraverseStep(STEP_TRAVERSE_SUBTREE,root));
 
-		
+
 		while (!operations.empty())
 		{
 
@@ -142,13 +123,10 @@ public:
 			operations.pop();
 
 			if(topOperation.first == STEP_EXTRACT_ROOT)
-			{	
-				if(topNode->data<0 || topNode->data>=10)
-				{
-					return OptionalValue(-1,false);
-				}
-				result+=(topNode->data * power10(power));
-				power++;
+			{
+				assert(topNode->data>=0 && topNode->data<10);
+				result.push(topNode->data);
+
 			}
 			else{
 				if (topNode->right != nullptr)
@@ -159,20 +137,85 @@ public:
 			}
 
 		}
-		
-		return OptionalValue(result,true);
+
+		return result;
 	}
 
 
 };
 
-//функцията може да връща и OptionalValue, но заради условието връща bool
-bool sumOfTrees(BSTree<int>& first,BSTree<int>& second)
-{	
-	OptionalValue firstValue = first.value();
-	OptionalValue secondValue = second.value();
-	if(!firstValue.isValid||!secondValue.isValid)
-		return false;
-	cout<<firstValue.value + secondValue.value<<endl;
-	return true;	
+
+
+stack<size_t> reverseStack(stack<size_t>& digitStack)
+{
+	stack<size_t> result;
+
+	while(!digitStack.empty())
+	{
+		result.push(digitStack.top());
+		digitStack.pop();
+	}
+
+	return result;
 }
+
+stack<size_t> sumOfDigitStacks(stack<size_t>& first,stack<size_t>& second)
+{
+	stack<size_t> result;
+	stack<size_t> firstBackwards = reverseStack(first);
+	stack<size_t> secondBackwards = reverseStack(second);
+
+	size_t left = 0;
+
+	while(!firstBackwards.empty() && !secondBackwards.empty())
+	{
+		size_t current = firstBackwards.top() + secondBackwards.top() + left;
+		firstBackwards.pop();
+		secondBackwards.pop();
+		result.push(current%10);
+		left = current/10;
+	}
+
+	if(firstBackwards.empty())
+	{
+		while(!secondBackwards.empty())
+		{
+			size_t current = secondBackwards.top() + left;
+			secondBackwards.pop();
+			result.push(current%10);
+			left = current/10;
+		}
+	}
+	else
+	{
+		while(!firstBackwards.empty())
+		{
+			size_t current = firstBackwards.top() + left;
+			firstBackwards.pop();
+			result.push(current%10);
+			left = current/10;
+		}
+	}
+	if(left!=0)
+	{
+		result.push(left);
+	}
+	return result;
+}
+
+bool sumOfTrees(BSTree<size_t>& first,BSTree<size_t>& second)
+{
+	stack<size_t> firstValue = first.value();
+	stack<size_t> secondValue = second.value();
+
+	stack<size_t> result = sumOfDigitStacks(firstValue,secondValue);
+
+	while(!result.empty())
+	{
+		cout<<result.top();
+		result.pop();
+	}
+
+	return true;
+}
+
