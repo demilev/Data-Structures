@@ -18,7 +18,7 @@ bool startsWithK(const string& key)
 }
 
 template <class KeyType>
-using hashFnType = size_t (*) (const KeyType&, 
+using hashFnType = size_t (*) (const KeyType&,
 	     							 size_t);
 template <class KeyType>
 using predicateFunction = bool (*) (const KeyType&);
@@ -38,7 +38,7 @@ public:
 	class Iterator
 	{
 		public:
-		
+
 		Iterator (const vector<list<KeyValue>> &_table, bool=false, predicateFunction<KeyType> p = identity);
 
 		KeyType operator * ();
@@ -48,7 +48,7 @@ public:
 		private:
 
 		void goToActualEntry();
-		
+
 		typename vector<list<KeyValue>>::const_iterator currentTableEntry;
 		typename list<KeyValue>::const_iterator currentCollision;
 		const vector<list<KeyValue>> &table;
@@ -82,7 +82,7 @@ private:
 
 
 template <class KeyType, class ValueType>
-using HMIterator 
+using HMIterator
    = typename HashMap<KeyType,ValueType>::Iterator;
 
 template <class KeyType, class ValueType>
@@ -102,7 +102,7 @@ void HashMap<KeyType,ValueType>::map(void (*f) (ValueType&))
 {
 	for(KeyType key : *this)
 	{
-		f((*this)[key]); 
+		f((*this)[key]);
 	}
 }
 template <class KeyType, class ValueType>
@@ -152,7 +152,7 @@ ValueType& HashMap<KeyType,ValueType>::operator [] (const KeyType &key)
 
 	size_t index = hashFunction (key,table.size());
 
-	for (KeyValue &pair : table[index])
+	for (KeyValue pair : table[index])
 	{
 		if (pair.key == key)
 			return pair.value;
@@ -168,12 +168,12 @@ ValueType HashMap<KeyType,ValueType>::operator [] (const KeyType &key) const
 {
 	size_t index = hashFunction (key,table.size());
 
-	for (KeyValue &pair : table[index])
+	for (KeyValue pair : table[index])
 	{
 		if (pair.key == key)
 			return pair.value;
 	}
-	
+
 	assert (false);
     return ValueType();
 }
@@ -213,10 +213,10 @@ ostream& HashMap<KeyType,ValueType>::operator<< (ostream& out) const
 	{
 		for(KeyValue pair : table[i])
 		{
-			out<<"Key: "<<pair.key<<", Value: "<<pair.value;	
+			out<<"Key: "<<pair.key<<", Value: "<<pair.value;
 			out<<"\n";
 		}
-			
+
 	}
 
 	return out;
@@ -224,18 +224,18 @@ ostream& HashMap<KeyType,ValueType>::operator<< (ostream& out) const
 
 
 template <class KeyType, class ValueType>
-HashMap<KeyType,ValueType>::Iterator::Iterator 
+HashMap<KeyType,ValueType>::Iterator::Iterator
      (const vector<list<typename HashMap<KeyType,ValueType>::KeyValue>> &_table,
      	bool goToEnd, predicateFunction<KeyType> p)
        :table(_table),predicate(p)
 {
 	currentTableEntry = _table.begin();
 	currentCollision = (*currentTableEntry).begin();
-	
+
 	if (goToEnd)
 	{
 		currentTableEntry = table.end();
-	} else 
+	} else
 	{
 
 		goToActualEntry();
@@ -248,9 +248,9 @@ void HashMap<KeyType,ValueType>::Iterator::goToActualEntry()
 {
 
 	/* Кога спираме:
-		1. currentTableEntry == table.end() 
+		1. currentTableEntry == table.end()
 		  (няма къде повече да търсим)
-		2. currentCollision != (*currentTableEntry).end() 
+		2. currentCollision != (*currentTableEntry).end()
 		  (сме намерили каквото търсим)
 	*/
 
@@ -273,7 +273,7 @@ KeyType HashMap<KeyType,ValueType>::Iterator::operator* ()
 	assert (currentTableEntry != table.end());
 
 	while(predicate((*currentCollision).key) == false)
-	{	
+	{
 
 		assert (currentTableEntry != table.end());
 		++(*this);
@@ -287,7 +287,7 @@ KeyType HashMap<KeyType,ValueType>::Iterator::operator* ()
 
 
 template <class KeyType, class ValueType>
-typename HashMap<KeyType,ValueType>::Iterator& 
+typename HashMap<KeyType,ValueType>::Iterator&
   HashMap<KeyType,ValueType>::Iterator::operator++ ()
 {
 	++currentCollision;
@@ -297,10 +297,10 @@ typename HashMap<KeyType,ValueType>::Iterator&
 
 
 template <class KeyType, class ValueType>
-bool HashMap<KeyType,ValueType>::Iterator::operator!= 
+bool HashMap<KeyType,ValueType>::Iterator::operator!=
     (HashMap<KeyType,ValueType>::Iterator &other)
 {
-		
+
 
 	if (currentTableEntry != other.currentTableEntry)
 		return true;

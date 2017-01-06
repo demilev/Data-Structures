@@ -1,0 +1,3 @@
+mitko -5 17
+gosho 3 23
+toshko 4 30
