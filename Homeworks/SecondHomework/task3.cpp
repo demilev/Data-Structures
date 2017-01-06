@@ -16,13 +16,33 @@ int sumNodes(const BinTree<int>& t)
 	//изразени чрез итератора
 	queue<pair<Iterator,Iterator>> nodes;
 	Iterator root = t.rootIter();
-	result += (*root);
+	
+	bool isRootBiggerThanLeft = false;
+	bool isRootBiggerThanRight = false;
 
-
+	//приемам, че коренът се добавя само ако е по - голям 
+	//от наследниците си, защото няма родител, а листата -
+	//само ако са по - малки от родителя си, защото нямат
+	//наследници
+	
 	if(!root.goLeft().empty())
+	{
 		nodes.push(pair<Iterator,Iterator>(root,root.goLeft()));
+		isRootBiggerThanLeft = *root > *(root.goLeft()) ? true : false;
+	}
+	else
+		isRootBiggerThanLeft = true;
+	
 	if(!root.goRight().empty())
+	{
 		nodes.push(pair<Iterator,Iterator>(root,root.goRight()));
+		isRootBiggerThanRight = *root > *(root.goRight()) ? true : false;
+	}
+	else
+		isRootBiggerThanRight = true;
+	
+	
+	result += (isRootBiggerThanRight && isRootBiggerThanLeft) ? *root : 0;
 	
 	while(!nodes.empty())
 	{
@@ -35,8 +55,7 @@ int sumNodes(const BinTree<int>& t)
 		if(!crr.second.goLeft().empty())
 		{
 			nodes.push(pair<Iterator,Iterator>(crr.second,crr.second.goLeft()));
-			if(*(crr.second) > *(crr.second.goLeft()))
-				isBiggerThanLeft = true;
+			isBiggerThanLeft = *(crr.second) > *(crr.second.goLeft()) ? true : false;
 		}
 		else
 			isBiggerThanLeft = true;
@@ -44,8 +63,7 @@ int sumNodes(const BinTree<int>& t)
 		if(!crr.second.goRight().empty())
 		{
 			nodes.push(pair<Iterator,Iterator>(crr.second,crr.second.goRight()));
-			if(*(crr.second) > *(crr.second.goRight()))
-				isBiggerThanRight = true;
+			isBiggerThanRight = *(crr.second) > *(crr.second.goRight()) ? true : false;
 		}
 		else
 			isBiggerThanRight = true;

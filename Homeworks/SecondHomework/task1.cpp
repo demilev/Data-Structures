@@ -17,7 +17,7 @@ struct Plant{
 
 	Plant()
 	{
-		strcpy(name,"UKNOWN");
+		strcpy(name,"");
 		minTemp = 0;
 		maxTemp = 0;
 	}
@@ -28,7 +28,18 @@ struct Plant{
 		minTemp = minT;
 		maxTemp = maxT;
 	}
-
+	Plant(const Plant& other)
+	{
+		strcpy(name,other.name);
+		minTemp = other.minTemp;
+		maxTemp = other.maxTemp;
+	}
+	Plant& operator=(const Plant& other)
+	{
+		strcpy(name,other.name);
+		minTemp = other.minTemp;
+		maxTemp = other.maxTemp;
+	}
 	bool canThriveAt(const double& temperature) const
 	{
 		return temperature >= minTemp && temperature <= maxTemp;
@@ -41,9 +52,26 @@ struct Plant{
 
 };
 
-ifstream& operator>>(ifstream& in,Plant& plant)
+void parseName(ifstream& in, char *name)
 {
-	in>>plant.name;
+	char c;
+	char tempName[MAX_SIZE];
+	int i = 0; 
+	while(c != ',')
+	{
+		c = in.get();
+		if(c!='\n' && c!= ',')
+		{
+			tempName[i] = c;
+			i++;	
+		}
+	}
+	strcpy(name,tempName);
+}
+
+ifstream& operator>>(ifstream& in,Plant& plant)
+{	
+	parseName(in,plant.name);
 	in>>plant.minTemp;
 	in>>plant.maxTemp;
 	return in;
@@ -63,9 +91,11 @@ stack<Plant> deserializePlants()
 	stack<Plant> result;
 	ifstream in("plants.txt");
 	
-	Plant crr;
-	while(in>>crr)
+	
+	while(!in.eof())
 	{	
+		Plant crr;
+		in>>crr;
 		result.push(crr);
 	}
 	
@@ -100,16 +130,15 @@ stack<Plant> thrivingPlantsToStack(const vector<Plant>& plants, const double& te
 	return result;
 } 
 
-queue<stack<Plant>> distributeByTemperature(stack<Plant> plants,queue<double> temperatures)
+queue<stack<Plant>> distributeByTemperature(stack<Plant> plants,stack<double> temperatures)
 {
 	queue<stack<Plant>> result;
 	vector<Plant> allPlants = toVector(plants);
 	while(!temperatures.empty())
 	{
-		stack<Plant> crrPlants = thrivingPlantsToStack(allPlants, temperatures.front());
+		stack<Plant> crrPlants = thrivingPlantsToStack(allPlants, temperatures.top());
 		result.push(crrPlants);
 		temperatures.pop();
-
 	}
 
 	return result;
@@ -143,7 +172,12 @@ void deserialize()
 int main()
 {
 	stack<Plant> plants = deserializePlants();
-	serializePlantsAtAverageTemperature(plants,13);
+	while(!plants.empty())
+	{
+		cout<<plants.top();
+		plants.pop();
+	}
+	//serializePlantsAtAverageTemperature(plants,13);
 	
 	return 0;
 }
