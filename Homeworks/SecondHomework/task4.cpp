@@ -5,6 +5,7 @@
 
 using namespace std;
 using Iterator = BinTree<char>::HierarchicalIterator;
+
 void allPaths(Iterator subTreeRootIterator,string crr,vector<string>& result)
 {
     crr.push_back(*subTreeRootIterator);
@@ -35,11 +36,4 @@ bool readWord(const BinTree<char>& t, char const* w)
 			return true;
 
 	return false;	
-}
-
-int main()
-{
-	BinTree<char> t;
-	t.add('a',"").add('b',"L").add('c',"R").add('a',"LR").add('e',"LL").add('a',"RL").add('e',"RR").add('c',"RRR");
-	cout<<readWord(t,"ceca");
 }

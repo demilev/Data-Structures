@@ -77,6 +77,7 @@ ifstream& operator>>(ifstream& in,Plant& plant)
 	return in;
 }
 
+// този оператор е използван при тестването
 ostream& operator<<(ostream& out,const Plant& plant)
 {
 	out << "Plant: " << plant.name << "  "
@@ -159,26 +160,4 @@ void serializePlantsAtAverageTemperature(stack<Plant> plants, const double& temp
 	out.close();
 }
 
-void deserialize()
-{
-	ifstream in("botanic.bin",ios::binary);
-	Plant p;
-	while(in.read((char*)&p,sizeof(Plant)))
-	{
-		cout<<p;
-	}
-}
-
-int main()
-{
-	stack<Plant> plants = deserializePlants();
-	while(!plants.empty())
-	{
-		cout<<plants.top();
-		plants.pop();
-	}
-	//serializePlantsAtAverageTemperature(plants,13);
-	
-	return 0;
-}
 

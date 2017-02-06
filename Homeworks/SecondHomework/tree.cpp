@@ -4,7 +4,8 @@
 
 using namespace std;
 
-
+// имплементацията на двоично дърво,
+// използвана в задачи 3 и 4
 template <class T>
 class BinTree
 {

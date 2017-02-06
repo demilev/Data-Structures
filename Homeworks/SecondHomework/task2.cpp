@@ -47,7 +47,9 @@ bool canBeSplited(list<queue<double>> listOfQueues)
 	}
 
 	for(list<queue<double>>::iterator it = listOfQueues.begin(); it != listOfQueues.end(); ++it)
-	{			
+	{		
+		// първо се прави тази проверка, защото считам, че при  
+		// разбиването едната част може да е празна	
 		if(abs(positiveSumOfPrevious - abs (negativeSumOfRemaining)) < eps)
 			return true;
 		
@@ -58,16 +60,3 @@ bool canBeSplited(list<queue<double>> listOfQueues)
 	return false;
 }
 
-
-int main()
-{	
-	queue<double> q;
-	q.push(3);
-	queue<double> q1;
-	q1.push(-4);
-	list<queue<double>> listOfQueues;
-	listOfQueues.push_back(q);
-	listOfQueues.push_back(q1);
-	cout<<canBeSplited(listOfQueues);
-	return 0;
-}

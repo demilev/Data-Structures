@@ -77,11 +77,3 @@ int sumNodes(const BinTree<int>& t)
 	return result;
 }
 
-
-int main()
-{
-	BinTree<int> t;
-	t.add(20,"").add(12,"L").add(10,"R").add(10,"LR").add(11,"LL").add(13,"RL").add(-13,"RR").add(-12,"RRR");
-
-	cout<<sumNodes(t)<<endl;
-}
